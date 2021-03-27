@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "717143181812",
+    "project_id": "resturant-ddd20",
+    "storage_bucket": "resturant-ddd20.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:717143181812:android:7f79cdb13bcae7581011a1",
+        "android_client_info": {
+          "package_name": "com.reeras.rest_sent"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "717143181812-41tk3ulf945hm3cttj6oa3fhg8k06tkt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC1FYWICiSNoCSdEGkNxuUatF39rLawWj8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "717143181812-41tk3ulf945hm3cttj6oa3fhg8k06tkt.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
