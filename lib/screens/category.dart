@@ -13,7 +13,6 @@ class Category extends StatefulWidget {
 }
 
 class _CategoryState extends State<Category> {
-  @override
   navigatToDetail(DocumentSnapshot post) {
     //
     Navigator.push(
@@ -27,6 +26,8 @@ class _CategoryState extends State<Category> {
 
 
   String name = '';
+  @override
+
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -48,12 +49,14 @@ class _CategoryState extends State<Category> {
       body: StreamBuilder(
         stream: (name != "" && name != null)
             ? FirebaseFirestore.instance
-            .collection('rest')
-            .where("serch", arrayContains: name).
-          where('cate' , isEqualTo: widget.nameCategory)
+            .collection(widget.nameCategory)
+            .where("serch", arrayContains: name)
+          //   .
+          // where('cate' , arrayContains: widget.nameCategory)
             .snapshots()
-            : FirebaseFirestore.instance.collection("rest").
-        where('cate' , isEqualTo: widget.nameCategory)
+            : FirebaseFirestore.instance.collection(widget.nameCategory)
+        //     .
+        // where('cate' , arrayContains: widget.nameCategory)
         .snapshots(),
         //   stream:      (name != "" && name != null) ? (FirebaseFirestore.instance.collection('rest').where('serch' , arrayContains: name )
         //       .

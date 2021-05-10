@@ -63,5 +63,5 @@ const KTextDecoration2 =InputDecoration(
 );
 
 
-List cate = <String>['pub', 'fol', 'sas', 'dffdg', 'fdgdf'];
+List cate = <String>[];
 String dataDrop ;

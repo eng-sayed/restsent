@@ -245,8 +245,8 @@ import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
-import 'package:rest_sent/constant.dart';
 import 'package:rest_sent/screens/test.dart';
+import 'package:rest_sent/widget/rounded_buttom.dart';
 
 class DetailsScreen extends StatefulWidget {
   final DocumentSnapshot post;
@@ -257,6 +257,7 @@ class DetailsScreen extends StatefulWidget {
 
 class _DetailsScreenState extends State<DetailsScreen> {
   int i = 0;
+  String categoryNamedrop ;
   List<NetworkImage> _listOfImages = <NetworkImage>[];
   CollectionReference restref = FirebaseFirestore.instance.collection('rest');
   final category = TextEditingController();
@@ -272,7 +273,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
   // }
 
   List num = [];
-
+List categ = [];
   // loopnum() {
   //   setState(() {
   //     for (int g = 0; g < widget.post.data()['nums'].length; g++) {
@@ -307,7 +308,13 @@ class _DetailsScreenState extends State<DetailsScreen> {
   //   });
   //   return num;
   // }
+cat()async{
 
+  for (int g = 0; g < widget.post.data()['cate'].length; g++) {
+    categ.add(widget.post.data()['cate'][g]);
+  }
+
+}
   numbers() async {
     num = [];
     for (int g = 0; g < widget.post.data()['nums'].length; g++) {
@@ -354,9 +361,33 @@ class _DetailsScreenState extends State<DetailsScreen> {
     //loop();
     numbers();
     images();
+    cat();
     super.initState();
   }
+  Future delete( int i)async{
 
+
+    await restref.doc(widget.post.id).delete();
+    await firebase_storage.FirebaseStorage.instance
+        .refFromURL(widget.post.data()['urlsrest'])
+        .delete();
+
+    for (int j = 0;
+    j < widget.post.data()['urlsMenu'].length;
+    j++) {
+      await firebase_storage.FirebaseStorage.instance
+          .refFromURL(widget.post.data()['urlsMenu'][j])
+          .delete();
+    }
+    for(var e in widget.post.data()['cate']){
+      await FirebaseFirestore.instance.collection(e).doc(widget.post.id).delete();
+
+    }
+
+
+
+
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -368,21 +399,41 @@ class _DetailsScreenState extends State<DetailsScreen> {
                 color: Colors.white,
               ),
               onPressed: () {
-                setState(() async {
-                  await restref.doc(widget.post.id).delete();
-                  await firebase_storage.FirebaseStorage.instance
-                      .refFromURL(widget.post.data()['urlsrest'])
-                      .delete();
+                setState(()  {
+                  // await restref.doc(widget.post.id).delete();
+                  // await firebase_storage.FirebaseStorage.instance
+                  //     .refFromURL(widget.post.data()['urlsrest'])
+                  //     .delete();
+                  //
+                  // for (int j = 0;
+                  //     j < widget.post.data()['urlsMenu'].length;
+                  //     j++) {
+                  //   await firebase_storage.FirebaseStorage.instance
+                  //       .refFromURL(widget.post.data()['urlsMenu'][j])
+                  //       .delete();
+                  // }
 
-                  for (int j = 0;
-                      j < widget.post.data()['urlsMenu'].length;
-                      j++) {
-                    await firebase_storage.FirebaseStorage.instance
-                        .refFromURL(widget.post.data()['urlsMenu'][j])
-                        .delete();
-                  }
 
-                  Navigator.of(context, rootNavigator: true).pop();
+                  showDialog(
+                      context: context,
+                      builder: (_) {
+                        return AlertDialog(
+                          backgroundColor:Colors.white,
+                          content: Text("Are you sure?",
+                              style:
+                              TextStyle(color: Colors.black)),
+                          actions: [TextButton(onPressed: (){
+                            setState(() {
+                              delete( i);
+                              Navigator.of(context).pop();
+                              Navigator.of(context).pop();
+
+
+                            });
+                          }, child: Text('Delete'))],
+                        );
+                      });
+
                 });
               },
             )
@@ -465,44 +516,81 @@ class _DetailsScreenState extends State<DetailsScreen> {
             SizedBox(
               height: 10,
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white60,
-                    borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                  ),
-                  width: MediaQuery.of(context).size.width*.5,
-                  child: DropdownButton(
-                    //hint: Text('select catefory'),
-                    value: widget.post.data()['cate'],
-                    isExpanded: true,
-                    onChanged: (value) {
-                      setState(() {
-                        dataDrop = value;
-                      });
-                    },
-                    items: cate.map((e) {
-                      return DropdownMenuItem(child: Text(e), value: e);
-                    }).toList(),
-                    dropdownColor: Colors.white60,
-                  ),
-                ),
-                Container(
-                  child: FlatButton(
-                    onPressed: ()async {
-                      await widget.post
-                          .reference.update({
-                        'cate': dataDrop,
+            Padding(
+              padding: const EdgeInsets.only(right:8.0 , left: 8.0),
+              child: Container(
+                width: MediaQuery.of(context).size.width,
+                height:MediaQuery.of(context).size.height*.1 ,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+    itemCount: categ.length,
+    itemBuilder: (BuildContext ctxt, int index) {
+                    return
 
-                      });
-                    },
-                    child: Text(
-                        'Update category'
-                    ),),
-                )
-              ],
+                      RoundedContainer(
+                        color: Colors.white,
+                        colorText: Colors.black,
+                        btnName:categ[index] ,
+
+                      );
+                    //   Padding(
+                    //   padding: const EdgeInsets.all(8.0),
+                    //   child: Container(
+                    //     decoration: BoxDecoration(
+                    //       border: Border.all(
+                    //           width: 2
+                    //       ),
+                    //       borderRadius: BorderRadius.all(
+                    //           Radius.circular(20.0) //                 <--- border radius here
+                    //       ),
+                    //       color: Colors.white54,
+                    //       // borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                    //     ),
+                    //     //width: MediaQuery.of(context).size.width*.2,
+                    //     child: Center(
+                    //       child: Padding(
+                    //         padding: const EdgeInsets.all(8.0),
+                    //         child: Text(categ[index], style: TextStyle(
+                    //           fontSize: 16
+                    //         ),),
+                    //       ),
+                    //     ),
+                    //     // child: DropdownButton(
+                    //     //   hint: Text('select category'),
+                    //     //   value: categoryNamedrop,
+                    //     //   isExpanded: true,
+                    //     //   onChanged: (value) {
+                    //     //     setState(() {
+                    //     //       categoryNamedrop = value;
+                    //     //     });
+                    //     //   },
+                    //     //   items: categ.map((e) {
+                    //     //     return DropdownMenuItem(child: Center(child: Text(e)), value: e);
+                    //     //   }).toList(),
+                    //     //   dropdownColor: Colors.white,
+                    //     // ),
+                    //   ),
+                    // );
+    }
+                  // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  // children: [
+
+                    // Container(
+                    //   child: FlatButton(
+                    //     onPressed: ()async {
+                    //       await widget.post
+                    //           .reference.update({
+                    //         'cate': dataDrop,
+                    //
+                    //       });
+                    //     },
+                    //     child: Text(
+                    //         'Update category'
+                    //     ),),
+                    // )
+
+                ),
+              ),
             ),
 
             // ClipRRect(

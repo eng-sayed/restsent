@@ -5,7 +5,10 @@ class SearchService {
     return FirebaseFirestore.instance
         .collection('rest')
         .where('serch',
-        isEqualTo: searchField.substring(0, 1).toUpperCase())
+        arrayContains: searchField.substring(0, 1).toUpperCase()
+        //isEqualTo: searchField.substring(0, 1).toUpperCase()
+
+    )
         .get().toString();
   }
 }

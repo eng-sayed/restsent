@@ -28,6 +28,7 @@ class _LogInState extends State<LogIn> {
         .authStateChanges()
         .listen((User user) {
       if (user == null) {
+
       } else {
         Navigator.pushReplacementNamed(context, Rest.id);
         print('User is signed in!');

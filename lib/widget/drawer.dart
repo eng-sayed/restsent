@@ -5,19 +5,25 @@ import 'package:rest_sent/screens/add_category.dart';
 import 'package:rest_sent/screens/add_rest.dart';
 import 'package:rest_sent/screens/log_in.dart';
 import 'package:rest_sent/screens/notification.dart';
-class DrawerWidget extends StatelessWidget {
+class DrawerWidget extends StatefulWidget {
   // User loginUser ;
-  // void getCurrentUser() async {
-  //   try {
-  //     final User _auth =  await FirebaseAuth.instance.currentUser;
-  //     if (_auth != null) {
-  //   //    loginUser = _auth.uid;
-  //       print(loginUser.email);
-  //     }
-  //   } catch (e) {
-  //     print(e);
-  //   }
-  // }
+  @override
+  _DrawerWidgetState createState() => _DrawerWidgetState();
+}
+
+class _DrawerWidgetState extends State<DrawerWidget> {
+user(){  FirebaseAuth auth = FirebaseAuth.instance;
+
+if (auth.currentUser != null) {
+ return auth.currentUser.email.toString();
+}}
+Future deleteUser()async{
+
+
+    await FirebaseAuth.instance.currentUser.delete();
+
+}
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -26,7 +32,13 @@ class DrawerWidget extends StatelessWidget {
         padding: EdgeInsets.zero,
         children: <Widget>[
           DrawerHeader(
-            //child: Text('loginUser.email.toString()'),
+           child: Center(
+             child: Text(user(),
+             style: TextStyle(
+               fontSize: MediaQuery.of(context).size.width*.06,
+               color: Colors.white
+             ),),
+           ),
             decoration: BoxDecoration(
               color: Color(0xFFD32F2F),
             ),
@@ -45,7 +57,7 @@ class DrawerWidget extends StatelessWidget {
               // ...
             },
           ),
-          ListTile(leading: Icon(Icons.person_add,color: Color(0xFF212121),),
+          ListTile(leading: Icon(Icons.category,color: Color(0xFF212121),),
             title: Text('Add category',
               style: TextStyle(
                 fontSize: 19.0,color: Color(0xFF212121),
@@ -72,7 +84,7 @@ class DrawerWidget extends StatelessWidget {
               // Update the state of the app.
               // ...
             },
-          ),  ListTile(leading: Icon(Icons.person_add,color: Color(0xFF212121),),
+          ),  ListTile(leading: Icon(Icons.notification_important,color: Color(0xFF212121),),
             title: Text('notification',
               style: TextStyle(
                 fontSize: 19.0,color: Color(0xFF212121),
@@ -80,6 +92,43 @@ class DrawerWidget extends StatelessWidget {
             onTap: () {
               Navigator.pop(context);
               Navigator.pushNamed(context, Notify.id);
+              //
+
+              // Update the state of the app.
+              // ...
+            },
+          ),
+          ListTile(leading: Icon(Icons.person_remove,color: Color(0xFF212121),),
+            title: Text('Delete user',
+              style: TextStyle(
+                fontSize: 19.0,color: Color(0xFF212121),
+              ),),
+            onTap: () {
+
+setState(() {
+  showDialog(
+      context: context,
+      builder: (_) {
+        return AlertDialog(
+          backgroundColor:Colors.white,
+          content: Text("Are you sure ?",
+              style:
+              TextStyle(color: Colors.black)),
+            actions: [TextButton(onPressed: (){
+              setState(() {
+
+                deleteUser();
+
+                Navigator.pushReplacementNamed(context, LogIn.id);
+
+              });
+            }, child: Text('Delete'))]
+        );
+      });
+});
+
+
+
               //
 
               // Update the state of the app.

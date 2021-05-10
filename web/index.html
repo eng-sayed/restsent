@@ -30,6 +30,31 @@
   <link rel="manifest" href="manifest.json">
 </head>
 <body>
+
+
+<script src="https://www.gstatic.com/firebasejs/8.4.2/firebase-app.js"></script>
+
+
+<script src="https://www.gstatic.com/firebasejs/8.4.2/firebase-analytics.js"></script>
+
+<script>
+
+  var firebaseConfig = {
+    apiKey: "AIzaSyDGOn6xFWDenPUsh2rlGaPfVq3Av-2GpPA",
+    authDomain: "resturant-ddd20.firebaseapp.com",
+    projectId: "resturant-ddd20",
+    storageBucket: "resturant-ddd20.appspot.com",
+    messagingSenderId: "717143181812",
+    appId: "1:717143181812:web:3533de070f4a0c821011a1",
+    measurementId: "G-X2KEBR30MR"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  firebase.analytics();
+</script>
+
+
+
   <!-- This script installs service_worker.js to provide PWA functionality to
        application. For more information, see:
        https://developers.google.com/web/fundamentals/primers/service-workers -->

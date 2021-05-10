@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -7,10 +8,11 @@ import 'package:rest_sent/constant.dart';
 import 'package:rest_sent/screens/add_rest.dart';
 import 'package:rest_sent/screens/category.dart';
 import 'package:rest_sent/screens/detail_screen.dart';
+import 'package:rest_sent/screens/log_in.dart';
 
 import 'package:rest_sent/widget/drawer.dart';
 import 'package:rest_sent/widget/rounded_buttom.dart';
-
+Set newCAt = {};
 class Rest extends StatefulWidget {
   static const id = 'Rest';
 
@@ -26,26 +28,8 @@ class _RestState extends State<Rest> {
   final firestoreInstance = FirebaseFirestore.instance;
 
 
-  Set newCAt = {};
 
-  Future getCloudFirestoreUsers() async {
-    print("getCloudFirestore");
 
-    //assumes you have a collection called "users"
-    firestoreInstance.collection("rest").get().then((querySnapshot) {
-      //print(querySnapshot);
-      print("users: results: length: " + querySnapshot.docs.length.toString());
-      querySnapshot.docs.forEach((value) {
-        print("users: results: value");
-        print(value.data());
-        // category.add(querySnapshot.docs[value].data()['cate']);
-        // print(category.toSet());
-      });
-    }).catchError((onError) {
-      print("getCloudFirestoreUsers: ERROR");
-      print(onError);
-    });
-  }
 
 
 //   cat()async{
@@ -73,7 +57,14 @@ class _RestState extends State<Rest> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    FirebaseAuth.instance
+        .authStateChanges()
+        .listen((User user) {
+      if (user == null) {
+         Navigator.pushReplacementNamed(context, LogIn.id);
 
+      }
+    });
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       print('Got a message whilst in the foreground!');
       print('Message data: ${message.data}');
@@ -148,7 +139,7 @@ print('event.notification.body');
             Container(
               height: MediaQuery.of(context).size.height*.1,
               child: StreamBuilder(
-             stream:   FirebaseFirestore.instance.collection("rest").snapshots(),
+             stream:   FirebaseFirestore.instance.collection("category").snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.hasError) {
                     return Text('error');
@@ -160,9 +151,9 @@ for( int j = 0 ; j<snapshot.data.docs.length ; j++ ){
 
 
 
-  newCAt.add(snapshot.data.docs[j].data()['cate']);
+  newCAt.add(snapshot.data.docs[j].data()['Category']);
   print(newCAt);
-
+cate= newCAt.toList();
 
 }
                   return  ListView.builder(
@@ -256,39 +247,6 @@ for( int j = 0 ; j<snapshot.data.docs.length ; j++ ){
               ),
             ),
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
             Container(
               height: MediaQuery.of(context).size.height*.8,
               child: StreamBuilder(
@@ -337,6 +295,18 @@ for( int j = 0 ; j<snapshot.data.docs.length ; j++ ){
                                 child: GridTileBar(
 
                                   backgroundColor: Colors.black54,
+                                  trailing: ClipRRect(
+                                    borderRadius: BorderRadius.circular(20),
+                                    child: Container(color: Colors.black.withOpacity(0.3),
+                                      width: 100,
+                                      child: Row(children: [
+                                        Icon(Icons.location_on),
+                                        SizedBox(width: 5,),
+                                        Text(snapshot.data.docs[i].data()['city'],
+                                          style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold),),
+                                      ]),
+                                    ),
+                                  ),
                                   title: Text(
                                     '${snapshot.data.docs[i].data()['name']}',
                                     style: TextStyle(

@@ -9,6 +9,7 @@ import 'package:rest_sent/screens/log_in.dart';
 import 'package:rest_sent/screens/notification.dart';
 import 'package:rest_sent/screens/reset_password.dart';
 import 'package:rest_sent/screens/rest.dart';
+import 'package:rest_sent/screens/showing_category.dart';
 import 'package:rest_sent/screens/view_image.dart';
 
 
@@ -50,10 +51,12 @@ LogIn.id : (context) =>LogIn(),
         AddRest.id : (context) => AddRest(),
         AddAdmin.id : (context) => AddAdmin(),
         Notify.id : (context) => Notify(),
-        MyHomePage.id : (context) => MyHomePage(),
+       // MyHomePage.id : (context) => MyHomePage(),
         ResetPass.id : (context) => ResetPass(),
         Category.id : (context) => Category(),
         AddCategory.id : (context) => AddCategory(),
+        ShowingCategory.id : (context) => ShowingCategory(),
+
 
         // ShowingData.id :(context) => ShowingData()
 

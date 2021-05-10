@@ -5,6 +5,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
+import 'package:rest_sent/screens/rest.dart';
 
 String selectedUrl = 'https://console.firebase.google.com/project/resturant-ddd20/notification';
 final Set<JavascriptChannel> jsChannels = [
@@ -23,11 +24,23 @@ class Notify extends StatefulWidget {
   @override
   _NotifyState createState() => _NotifyState();
 }
-
+final flutterWebViewPlugin = FlutterWebviewPlugin();
 class _NotifyState extends State<Notify> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        actions:[IconButton(icon:Icon(Icons.exit_to_app) , onPressed: (){
+          setState(() {
+            flutterWebViewPlugin.close();
+            Navigator.pushReplacementNamed(context, Rest.id);
+
+          });
+        },),],
+        backgroundColor: Color(0xFFD32F2F),
+        leading: Text(''),
+
+      ),
       body: SafeArea(
         child: WebviewScaffold(
           clearCookies: false,

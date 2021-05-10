@@ -1,4 +1,4 @@
-import 'dart:ffi';
+
 
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +7,7 @@ import 'package:rest_sent/constant.dart';
 
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:rest_sent/screens/rest.dart';
 
 
 
@@ -20,26 +21,34 @@ class AddRest extends StatefulWidget {
 class _AddRestState extends State<AddRest> {
   firebase_storage.FirebaseStorage storage =
       firebase_storage.FirebaseStorage.instance;
-  final num1 = TextEditingController();
-  final num2 = TextEditingController();
-  final num3 = TextEditingController();
-  final num4 = TextEditingController();
+
+  final restName = TextEditingController();
+
+  final number = TextEditingController();
+  // final num2 = TextEditingController();
+  // final num3 = TextEditingController();
+  // final num4 = TextEditingController();
   final city = TextEditingController();
 
   final String imagerest = '';
-  final restName = TextEditingController();
+
   Future<QuerySnapshot> _documentSnapshot =
       FirebaseFirestore.instance.collection('rest').get();
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
+
+
+
   List<Asset> imageRest = <Asset>[];
   List<Asset> imagesMenu = <Asset>[];
 
   List<String> imageUrls = <String>[];
   List<String> imageUrlsMenu = <String>[];
   List nums = [];
+  Set restCat = {};
+
 
   String _error = 'No Error Dectected';
-  bool isUploading = false;
+  // bool isUploading = false;
   @override
   void initState() {
     super.initState();
@@ -86,7 +95,7 @@ class _AddRestState extends State<AddRest> {
         cupertinoOptions: CupertinoOptions(takePhotoIcon: "chat"),
         materialOptions: MaterialOptions(
           actionBarColor: "#D32F2F",
-          actionBarTitle: "Upload image",
+          actionBarTitle: "Upload image restaurant",
           allViewTitle: "All Photos",
           useDetailsView: false,
           selectCircleStrokeColor: "#000000",
@@ -108,13 +117,13 @@ class _AddRestState extends State<AddRest> {
 
     try {
       resultList = await MultiImagePicker.pickImages(
-        maxImages: 300,
+        maxImages: 30,
         enableCamera: true,
         selectedAssets: imagesMenu,
         cupertinoOptions: CupertinoOptions(takePhotoIcon: "chat"),
         materialOptions: MaterialOptions(
           actionBarColor: "#D32F2F",
-          actionBarTitle: "Upload image",
+          actionBarTitle: "Upload image menu",
           allViewTitle: "All Photos",
           useDetailsView: false,
           selectCircleStrokeColor: "#000000",
@@ -202,16 +211,28 @@ class _AddRestState extends State<AddRest> {
     //   'urlsrest': imageUrls[0].toString(),
     //   'cate': catee.toList()
     // });
-    await _firebaseFirestore.collection('rest').doc().set({
+    for(var e in restCat){
+      await _firebaseFirestore.collection(e).doc(restName.text).set({
+        'serch': nameIndex,
+        'name': restName.text.toLowerCase(),
+        'city': city.text,
+        'nums': nums.toSet().toList(),
+        'urlsMenu': imageUrlsMenu,
+        'urlsrest': imageUrls[0].toString(),
+        'cate': restCat.toSet().toList()
+      });
+    }
+    await _firebaseFirestore.collection('rest').doc(restName.text).set({
       'serch': nameIndex,
-      'name': restName.text,
+      'name': restName.text.toLowerCase(),
       'city': city.text,
-      'nums': nums,
+      'nums': nums.toSet().toList(),
       'urlsMenu': imageUrlsMenu,
       'urlsrest': imageUrls[0].toString(),
-      'cate': dataDrop
-    }).then((_) {
+      'cate': restCat.toSet().toList()
+    }).then((_)  {
       setState(() {
+
         ScaffoldMessenger.of(context)
             .showSnackBar(snac('Uploded images succefully'));
       });
@@ -224,11 +245,15 @@ class _AddRestState extends State<AddRest> {
         imageUrls = [];
         imageUrlsMenu = [];
         nameIndex = [];
+        nums = [] ;
+        restCat = {};
+        // selectedNumber = null;
+        // selectedCate = null ;
         city.clear();
-        num3.clear();
-        num2.clear();
-        num1.clear();
-        num4.clear();
+        // num3.clear();
+        // num2.clear();
+        number.clear();
+        // num4.clear();
       });
     });
 
@@ -293,7 +318,7 @@ class _AddRestState extends State<AddRest> {
       ),
       body: Container(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 20),
+          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20),
           child: SingleChildScrollView(
             child: Column(
               children: [
@@ -315,77 +340,162 @@ class _AddRestState extends State<AddRest> {
                 Container(
                   child: TextField(
                     textAlign: TextAlign.center,
-                    controller: num1,
-                    keyboardType: TextInputType.phone,
-                    decoration: KTextDecoration.copyWith(
-                        hintText: 'Enter first number'),
-                  ),
-                ),
-                SizedBox(
-                  height: 10.0,
-                ),
-                Container(
-                  child: TextField(
-                    textAlign: TextAlign.center,
-                    keyboardType: TextInputType.phone,
-                    controller: num2,
-                    decoration: KTextDecoration.copyWith(
-                        hintText: 'Enter second number'),
-                  ),
-                ),
-                SizedBox(
-                  height: 10.0,
-                ),
-                Container(
-                  child: TextField(
-                    textAlign: TextAlign.center,
-                    keyboardType: TextInputType.phone,
-                    controller: num3,
-                    decoration: KTextDecoration.copyWith(
-                        hintText: 'Enter third number'),
-                  ),
-                ),
-                SizedBox(
-                  height: 10.0,
-                ),
-                Container(
-                  child: TextField(
-                    textAlign: TextAlign.center,
-                    keyboardType: TextInputType.phone,
-                    controller: num4,
-                    decoration: KTextDecoration.copyWith(
-                        hintText: 'Enter forth number'),
-                  ),
-                ),
-                SizedBox(
-                  height: 10.0,
-                ),
-                Container(
-                  child: TextField(
-                    textAlign: TextAlign.center,
                     controller: city,
                     decoration:
-                        KTextDecoration.copyWith(hintText: 'Enter city'),
+                    KTextDecoration.copyWith(hintText: 'Enter city'),
                   ),
                 ),
+                SizedBox(
+                  height: 10.0,
+                ),
+                Container(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(right:8.0),
+                        child: Text('Number', style: TextStyle(
+                            color: Colors.black,
+                            fontSize: (MediaQuery.of(context).size.width)* 0.045
+                        ),),
+                      ),
+                      Container(
+width: MediaQuery.of(context).size.width*.55,
+                        child:TextField(
+                          textAlign: TextAlign.center,
+                          controller: number,
+                          keyboardType: TextInputType.phone,
+                          decoration: KTextDecoration.copyWith(
+                              hintText: 'Enter number'),
+                        ),
+                      ),
+                      Container(
+
+                        child: IconButton(icon: Icon(Icons.add ,color: Colors.black,), onPressed: (){
+                          setState(() {
+if(number.text != '' || number.text!= null){
+  nums.add(number.text);
+  number.clear();
+
+  showDialog(
+      context: context,
+      builder: (_) {
+        return AlertDialog(
+          backgroundColor:Colors.white,
+          content: Text("Number added",
+              style:
+              TextStyle(color: Colors.black)),
+        );
+      });
+}else{
+  showDialog(
+      context: context,
+      builder: (_) {
+        return AlertDialog(
+          backgroundColor:Colors.white,
+          content: Text("Can't added empty number",
+              style:
+              TextStyle(color: Colors.black)),
+        );
+      });
+}
+
+
+                          });
+                        },),
+                      )
+                    ],
+                  ),
+                ),
+                // SizedBox(
+                //   height: 10.0,
+                // ),
+                // Container(
+                //   decoration: BoxDecoration(
+                //     color: Colors.white,
+                //     borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                //     boxShadow: [
+                //       BoxShadow(
+                //         color: Colors.grey[300],
+                //         offset: Offset(0.0, 1.0), //(x,y)
+                //         blurRadius: 6.0,
+                //       ),
+                //     ],
+                //   ),
+                //   child: FlatButton(onPressed: (){
+                //     setState(() {
+                //       nums.add(number.text);
+                //       number.clear();
+                //     });
+                //   }, child: Text('Add number',
+                //   style: TextStyle(
+                //       fontSize: (MediaQuery.of(context).size.width)* 0.045
+                //   ),)
+                //
+                //   ),
+                // ),
+                SizedBox(
+                  height: 10.0,
+                ),
+
+                // Container(
+                //   child: TextField(
+                //     textAlign: TextAlign.center,
+                //     keyboardType: TextInputType.phone,
+                //     controller: num2,
+                //     decoration: KTextDecoration.copyWith(
+                //         hintText: 'Enter second number'),
+                //   ),
+                // ),
+                // SizedBox(
+                //   height: 10.0,
+                // ),
+                // Container(
+                //   child: TextField(
+                //     textAlign: TextAlign.center,
+                //     keyboardType: TextInputType.phone,
+                //     controller: num3,
+                //     decoration: KTextDecoration.copyWith(
+                //         hintText: 'Enter third number'),
+                //   ),
+                // ),
+
+                // Container(
+                //   child: TextField(
+                //     textAlign: TextAlign.center,
+                //     keyboardType: TextInputType.phone,
+                //     controller: num4,
+                //     decoration: KTextDecoration.copyWith(
+                //         hintText: 'Enter forth number'),
+                //   ),
+                // ),
+                // SizedBox(
+                //   height: 10.0,
+                // ),
+
+
 
                 Container(
 
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      Text('Category'
-                      , style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 18.0
-                        ),),
+                      Padding(
+                        padding: const EdgeInsets.only(right:8.0),
+                        child: Text('Category'
+                        , style: TextStyle(
+                            color: Colors.black,
+                              fontSize: (MediaQuery.of(context).size.width)* 0.045
+                          ),),
+                      ),
                       Container(
                         decoration: BoxDecoration(
-                          color: Colors.white60,
+                          color: Colors.white,
                           borderRadius: BorderRadius.all(Radius.circular(20.0)),
                         ),
                         width: MediaQuery.of(context).size.width*.5,
                         child: DropdownButton(
+                          hint:Center(child: Text('select category')),
                           value: dataDrop,
                           isExpanded: true,
                           onChanged: (value) {
@@ -393,15 +503,75 @@ class _AddRestState extends State<AddRest> {
                               dataDrop = value;
                             });
                           },
-                          items: cate.map((e) {
-                            return DropdownMenuItem(child: Text(e), value: e);
+                          items: newCAt.map((e) {
+                            return DropdownMenuItem(child: Center(child: Text(e)), value: e);
                           }).toList(),
-                          dropdownColor: Colors.white60,
+                          dropdownColor: Colors.white,
                         ),
                       ),
+                      IconButton(
+                        icon: Icon(Icons.add,
+                        color: Colors.black,),
+                        onPressed: (){
+                          setState(() {
+
+if(dataDrop != null){
+  restCat.add(dataDrop);
+  showDialog(
+      context: context,
+      builder: (_) {
+        return AlertDialog(
+          backgroundColor:Colors.white,
+          content: Text("Category added",
+              style:
+              TextStyle(color: Colors.black)),
+        );
+      });
+}
+           else{                  showDialog(
+                                context: context,
+                                builder: (_) {
+                                  return AlertDialog(
+                                    backgroundColor:Colors.white,
+                                    content: Text("Selected category is empty",
+                                        style:
+                                        TextStyle(color: Colors.black)),
+                                  );
+                                });
+
+    }
+                          });
+                        },
+                      )
+
                     ],
                   ),
                 ),
+                // Padding(
+                //   padding: const EdgeInsets.all(10.0),
+                //   child: Container(
+                //     decoration: BoxDecoration(
+                //
+                //       color: Colors.white,
+                //       borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                //       boxShadow: [
+                //         BoxShadow(
+                //           color: Color(0xFFBDBDBD),
+                //           offset: Offset(0.0, 1.0), //(x,y)
+                //           blurRadius: 6.0,
+                //         ),
+                //       ],
+                //     ),
+                //     child: FlatButton(onPressed: (){
+                //       setState(() {
+                //         restCat.add(dataDrop);
+                //       });
+                //     }, child: Text('add Category'
+                //       ,style: TextStyle(
+                //           fontSize: (MediaQuery.of(context).size.width)* 0.045
+                //       ),)),
+                //   ),
+                // ),
 
                 SizedBox(
                   height: 20.0,
@@ -418,7 +588,7 @@ class _AddRestState extends State<AddRest> {
                         ),
                         child: FlatButton(
                           child: Text(
-                            "Pick menu",
+                            "Add Menu",
                             style: TextStyle(
                                 fontSize:
                                     MediaQuery.of(context).size.width * 0.045,
@@ -428,63 +598,7 @@ class _AddRestState extends State<AddRest> {
                           // منيو
                         ),
                       ),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Color(0xFFF44336),
-                          borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                        ),
-                        child: FlatButton(
-                            onPressed: () {
-                              setState(() {
-                                num1.text != '' ? nums.add(num1.text) : null;
-                                num2.text != '' ? nums.add(num2.text) : null;
-                                num3.text != '' ? nums.add(num3.text) : null;
-                                num4.text != '' ? nums.add(num4.text) : null;
 
-                                // nums = [
-                                //   num1.text,
-                                //   num2.text,
-                                //   num3.text,
-                                //   num4.text
-                                // ];
-                                String x = '';
-                                for (int i = 0; i < restName.text.length; i++) {
-                                  for (int j = 0; j <= i; j++) {
-                                    x += restName.text[j];
-                                  }
-                                  nameIndex.add(x);
-                                  x = '';
-                                }
-                              });
-
-                              if (imageRest.length == 0) {
-                                showDialog(
-                                    context: context,
-                                    builder: (_) {
-                                      return AlertDialog(
-                                        backgroundColor:
-                                            Theme.of(context).backgroundColor,
-                                        content: Text("No image selected",
-                                            style:
-                                                TextStyle(color: Colors.white)),
-                                      );
-                                    });
-                              } else {
-                                setState(() {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                      snac('Please wait, we are uploading'));
-                                });
-                                uploadImages();
-                              }
-                            },
-                            child: Text(
-                              'send',
-                              style: TextStyle(
-                                  fontSize:
-                                      MediaQuery.of(context).size.width * 0.045,
-                                  color: Colors.white),
-                            )),
-                      ),
                       Container(
                         decoration: BoxDecoration(
                           color: Color(0xFFF44336),
@@ -492,7 +606,7 @@ class _AddRestState extends State<AddRest> {
                         ),
                         child: FlatButton(
                           child: Text(
-                            "Pick resturant",
+                            "Add Restaurant Picture",
                             style: TextStyle(
                                 fontSize:
                                     MediaQuery.of(context).size.width * 0.045,
@@ -506,6 +620,193 @@ class _AddRestState extends State<AddRest> {
                 ),
                 SizedBox(
                   height: 20.0,
+                ),
+                // Container(
+                //   child: Row(
+                //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                //     children: [
+                //       Text('Category',style: TextStyle(
+                //         fontSize: (MediaQuery.of(context).size.width)* 0.045
+                //       ),),
+                //       Container(
+                //         decoration: BoxDecoration(
+                //           color: Colors.white,
+                //           borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                //         ),
+                //         width: MediaQuery.of(context).size.width*.5,
+                //         child: DropdownButton(
+                //           hint:Center(child: Text('selected category')),
+                //           value: selectedCate,
+                //           isExpanded: true,
+                //           onChanged: (value) {
+                //             setState(() {
+                //               selectedCate = value;
+                //             });
+                //           },
+                //           items: restCat.toSet().map((e) {
+                //             return DropdownMenuItem(child: Center(child: Text(e)), value: e);
+                //           }).toList(),
+                //           dropdownColor: Colors.white,
+                //         ),
+                //       ),
+                //       FlatButton(onPressed: (){
+                //         setState(() {
+                //           restCat.remove(selectedCate);
+                //
+                //         });
+                //       }, child: Text('Delete'))
+                //     ],
+                //   ),
+                // ),
+
+
+
+
+
+
+
+
+
+
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: [
+                      Text('Category'
+                        ,style: TextStyle(
+                            fontSize: (MediaQuery.of(context).size.width)* 0.045
+                        ),),
+                      Container(
+                        child: Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: Container(
+                            height: MediaQuery.of(context).size.height*.25,
+
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                            ),
+                            width: MediaQuery.of(context).size.width*.8,
+                            child: ListView.builder(
+                                itemCount: restCat.length,
+                                itemBuilder: (context , i){
+                                  return  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.only(left:8.0),
+                                        child: Text(restCat.elementAt(i),
+                                          style: TextStyle(
+                                              fontSize: MediaQuery.of(context).size.width*.05
+                                          ),),
+                                      ),
+                                      IconButton(icon: Icon(Icons.delete_forever_outlined , color: Colors.red ,
+                                        size: 30,), onPressed: (){
+                                        setState(() {
+                                          restCat.remove(restCat.elementAt(i));
+                                        });
+                                      })
+                                    ],
+                                  );
+                                }),
+                            // child: DropdownButton(
+                            //   hint:Center(child: Text('selected numbers')),
+                            //    value: selectedNumber,
+                            //   isExpanded: true,
+                            //   onChanged: (value) {
+                            //     setState(() {
+                            //       selectedNumber  = value;
+                            //     });
+                            //   },
+                            //   items: nums.toSet().map((e) {
+                            //     return DropdownMenuItem(child: Center(child: Text(e)), value: e);
+                            //   }).toList(),
+                            //   dropdownColor: Colors.white,
+                            // ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: [
+                      Text('Numbers'
+                        ,style: TextStyle(
+                            fontSize: (MediaQuery.of(context).size.width)* 0.045
+                        ),),
+                      Container(
+                        child: Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: Container(
+                          height: MediaQuery.of(context).size.height*.25,
+
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                            ),
+                            width: MediaQuery.of(context).size.width*.8,
+                            child: ListView.builder(
+                                itemCount: nums.length,
+                                itemBuilder: (context , i){
+                                return  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.only(left:8.0),
+                                      child: Text(nums[i],
+                                      style: TextStyle(
+                                        fontSize: MediaQuery.of(context).size.width*.05
+                                      ),),
+                                    ),
+                                    IconButton(icon: Icon(Icons.delete_forever_outlined , color: Colors.red ,
+                                        size: 30,), onPressed: (){
+                                      setState(() {
+                                        nums.remove(nums[i]);
+                                      });
+                                    })
+                                  ],
+                                  );
+                                }),
+                            // child: DropdownButton(
+                            //   hint:Center(child: Text('selected numbers')),
+                            //    value: selectedNumber,
+                            //   isExpanded: true,
+                            //   onChanged: (value) {
+                            //     setState(() {
+                            //       selectedNumber  = value;
+                            //     });
+                            //   },
+                            //   items: nums.toSet().map((e) {
+                            //     return DropdownMenuItem(child: Center(child: Text(e)), value: e);
+                            //   }).toList(),
+                            //   dropdownColor: Colors.white,
+                            // ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 // Container(
                 //   child: ElevatedButton(
@@ -524,7 +825,63 @@ class _AddRestState extends State<AddRest> {
                 //     child: buildGridView1(), // منيو
                 //   ),
                 // ),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Color(0xFFF44336),
+                    borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                  ),
+                  child: FlatButton(
+                      onPressed: () {
+                        setState(() {
+                         // number.text != '' ? nums.add(number.text) : null;
+                          // num2.text != '' ? nums.add(num2.text) : null;
+                          // num3.text != '' ? nums.add(num3.text) : null;
+                          // num4.text != '' ? nums.add(num4.text) : null;
 
+                          // nums = [
+                          //   num1.text,
+                          //   num2.text,
+                          //   num3.text,
+                          //   num4.text
+                          // ];
+                          String x = '';
+                          for (int i = 0; i < restName.text.length; i++) {
+                            for (int j = 0; j <= i; j++) {
+                              x += restName.text[j];
+                            }
+                            nameIndex.add(x);
+                            x = '';
+                          }
+                        });
+
+                        if (imageRest.length == 0) {
+                          showDialog(
+                              context: context,
+                              builder: (_) {
+                                return AlertDialog(
+                                  backgroundColor:
+                                  Theme.of(context).backgroundColor,
+                                  content: Text("No image selected",
+                                      style:
+                                      TextStyle(color: Colors.white)),
+                                );
+                              });
+                        } else {
+                          setState(() {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                snac('Please wait, we are uploading'));
+                          });
+                          uploadImages();
+                        }
+                      },
+                      child: Text(
+                        'Add Restaurant',
+                        style: TextStyle(
+                            fontSize:
+                            MediaQuery.of(context).size.width * 0.045,
+                            color: Colors.white),
+                      )),
+                ),
               ],
             ),
           ),
